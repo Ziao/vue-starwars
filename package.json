@@ -1,5 +1,5 @@
 {
-  "name": "vue-starwars",
+  "name": "@ziao/vue-starwars",
   "version": "1.0.0",
   "description": "A vue component that scrolls images in a Star Wars-esque manner.",
   "main": "starwars.vue",
