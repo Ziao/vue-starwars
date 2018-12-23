@@ -1,6 +1,6 @@
 {
   "name": "@ziaomedia/vue-starwars",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A vue component that scrolls images in a Star Wars-esque manner.",
   "main": "dist/starwars.umd.js",
   "module": "dist/starwars.esm.js",
