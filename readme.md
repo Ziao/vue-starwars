@@ -2,6 +2,8 @@
 
 A vue component that scrolls images in a Star Wars-esque manner.
 
+![preview](preview.gif "Preview")
+
 ## Installing
 ```
 yarn add vue-starwars
@@ -32,7 +34,7 @@ Vue.use(StarWars);
 
 You can now use the ```<star-wars />``` component. See the documentation for the supported options.
 
-## Documentation 
+## Documentation
 
 Option | Type | Default | Explanation
 --- | --- | --- | ---
