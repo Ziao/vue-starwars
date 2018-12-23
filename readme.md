@@ -50,6 +50,8 @@ item-width | integer | 250 | The target width (in pixels) of every tile. This is
 speed | float | 1 | A modifier to the speed. A value of 2 makes the tiles scroll by twice as fast.
 spacing | float | 0.05 | The spacing between tiles. Relative to the width of the items. You'll probably want to keep this lower than 0.1 
 
+## Todo
+- Keep track of the rows / columns so we don't recalculate everything when the element resizes.
 
 ## License
 This project is licensed under the MIT License - see the [license.md](license.md) file for details
