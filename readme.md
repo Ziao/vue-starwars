@@ -32,7 +32,7 @@ Vue.use(StarWars);
 
 You can now use the ```<star-wars />``` component. See the documentation for the supported options.
 
-## Documentation
+## Documentation 
 
 Option | Type | Default | Explanation
 --- | --- | --- | ---
@@ -44,7 +44,7 @@ height | string | 100% | The height of the component. Valid options are things l
 ratio | float | 1.4 | The ratio of the tiles. A value of 1 represents a perfect square. Higher values make the tiles taller, while lower values make them wider
 row-min | integer | 3 | The minimum number of tiles on a row, for mobile screens
 row-max | integer | 9 | The maximum number of tiles on a row, for massive screens
-itemWidth | integer | 250 | The target width (in pixels) of every tile. This is used to calculate the number of tiles that will be displayed per row. 
+item-width | integer | 250 | The target width (in pixels) of every tile. This is used to calculate the number of tiles that will be displayed per row. 
 speed | float | 1 | A modifier to the speed. A value of 2 makes the tiles scroll by twice as fast.
 spacing | float | 0.05 | The spacing between tiles. Relative to the width of the items. You'll probably want to keep this lower than 0.1 
 
