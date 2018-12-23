@@ -1,6 +1,7 @@
 # Vue-starwars
 
-A vue component that scrolls images in a Star Wars-esque manner.
+A vue component that scrolls images in a Star Wars-esque manner.  
+(Ignore the framerate in the preview. The real thing runs at a smooth 60 fps.)
 
 ![preview](preview.gif "Preview")
 
