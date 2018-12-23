@@ -56,6 +56,7 @@ spacing | float | 0.05 | The spacing between tiles. Relative to the width of the
 - Keep track of the rows / columns so we don't recalculate everything when the element resizes.
 - Negative speed to go backwards.
 - Take DPI into account.
+- Calculate perspective based on size instead of fixed.
 - Get rid of the 'rows' concept?
  
 ## License
