@@ -14,7 +14,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "export": "vue-cli-service build --target lib --name @ziaomedia/vue-starwars src/components/starwars.vue",
+    "export": "vue-cli-service build --target lib --name @ziaomedia/vue-starwars src/components/starwars.vue && rm dist/demo.html",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
