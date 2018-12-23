@@ -2,7 +2,7 @@
   "name": "@ziaomedia/vue-starwars",
   "version": "1.0.1",
   "description": "A vue component that scrolls images in a Star Wars-esque manner.",
-  "main": "dist/vue-starwars.common.js",
+  "main": "dist/@ziaomedia/vue-starwars.common.js",
   "repository": "https://github.com/Ziao/vue-starwars",
   "author": "Nick Kamer <nick@ziaomedia.com> (https://ziaomedia.com)",
   "license": "MIT",
