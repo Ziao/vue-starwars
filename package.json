@@ -24,5 +24,8 @@
     "build:umd": "rollup --config rollup.config.js --format umd --file dist/starwars.umd.js",
     "build:es": "rollup --config rollup.config.js --format es --file dist/starwars.esm.js",
     "build:unpkg": "rollup --config rollup.config.js --format iife --file dist/starwars.min.js"
+  },
+  "dependencies": {
+    "p5": "^0.7.2"
   }
 }

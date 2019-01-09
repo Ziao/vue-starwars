@@ -1,12 +1,13 @@
 <template>
     <div
-            :style="{perspective: `${perspective}px`, background: background, width: width, height: height}"
+            :style="{width, height, background}"
             class="vue-starwars">
-        <canvas ref="canvas"></canvas>
     </div>
 </template>
 
 <script>
+
+    import p5 from 'p5';
 
     export default {
 
@@ -21,6 +22,7 @@
             },
             placeholder: {
                 type: String,
+                default: null,
             },
             width: {
                 type: String,
@@ -32,7 +34,7 @@
             },
             ratio: {
                 type: Number,
-                default: 1.4,
+                default: 1.25,
             },
             rowMin: {
                 type: Number,
@@ -44,7 +46,7 @@
             },
             itemWidth: {
                 type: Number,
-                default: 250,
+                default: 180,
             },
             speed: {
                 type: Number,
@@ -52,203 +54,183 @@
             },
             spacing: {
                 type: Number,
-                default: 0.05,
+                default: 3,
+            },
+            angle: {
+                type: Number,
+                default: Math.PI * 0.2
             }
         },
 
-        data() {
-            return {
-                canvas: null,
-                context: null,
-                recompute: 0,
-                perspective: 0,
-            }
-        },
-
-        computed: {
-            rows(){
-
-                // Using the recompute property so this method "relies" on it. Then we can arbitrarily
-                // rerun this compute function.
-                /* eslint-disable-next-line */
-                const woop = this.recompute;
-
-                if(!this.canvas || !this.context) return [];
-
-                let tilesPerRow = Math.ceil(this.canvas.width / this.itemWidth);
-                tilesPerRow = Math.max(this.rowMin, Math.min(this.rowMax, tilesPerRow));
-
-                // Todo: make sure the tiles per row / number of rows are actually different.
-                // If not, just return what we already had
-
-                const itemWidth = this.canvas.width / tilesPerRow;
-                const itemHeight = itemWidth * this.ratio;
-                const rowCount = Math.ceil(this.canvas.height / itemHeight + 1);
-
-                const imagesNeeded = rowCount * tilesPerRow;
-                const images = this.images.slice(0, imagesNeeded);
-                const rows = [];
-
-                // Make sure we get enough images first
-                for(let i = images.length; i < imagesNeeded; i++){
-                    images.push(this.images[Math.floor(Math.random() * this.images.length)]);
-                }
-
-                // Shuffle the images (note: not truly random but close enough)
-                images.sort(() => Math.random() - 0.5);
-
-                for(let rowID = 0; rowID < rowCount; rowID++){
-                    let rowImages = images.slice(rowID * tilesPerRow, (rowID + 1) * tilesPerRow);
-                    let row = {
-                        offset: rowID,
-                        tiles: [],
-                    };
-
-                    for(let src of rowImages){
-                        const tile = {
-                            src: src,
-                            loaded: false,
-                            opacity: 0,
-                            top: 0,
-                            left:0,
-                            width: 0,
-                            height: 0,
-                        };
-                        row.tiles.push(tile);
-
-                        tile.image = new Image;
-                        tile.image.onload = () => {
-                            // Calculate how to crop the image to fit the ratio
-                            const childRatio = tile.image.height / tile.image.width;
-                            if (childRatio < this.ratio) {
-                                // The image is wider
-                                tile.height = tile.image.height;
-                                tile.width = tile.image.height / this.ratio;
-                            } else {
-                                // The image is taller
-                                tile.height = tile.image.width * this.ratio;
-                                tile.width = tile.image.width;
-                            }
-                            tile.top = (tile.image.height - tile.height) / 2;
-                            tile.left = (tile.image.width - tile.width) / 2;
-
-                            tile.loaded = true;
-
-                        };
-                        tile.image.src = tile.src;
-                    }
-
-                    rows.push(row);
-                }
-
-                return rows;
-
+        watch: {
+            images(){
+                this.loadTextures();
+                this.computeTiles();
             }
         },
 
         created(){
-            if(process.client && this.placeholder) {
-                this.placeholderImage = new Image();
-                this.placeholderImage.src = this.placeholder;
-            }
+
+            // By defining these here, they won't be observed, increasing performance
+            this.sketch = null;
+            this.textures = []; // A collection of HTMLImageElement's to be used as textures
+            this.tiles = []; // [{ texture (from textures), opacity: (float 0-255) }]
+            this.columns = 0;
+            this.rows = 0;
+            this.tileWidth = 0;
+            this.tileHeight = 0;
+            this.placeholderTexture = null; // A HTMLImageElement of the placeholder image, if any
+            this.context = null; // WebGL context of the canvas
+            this.backgroundColor = null; // P5 color instance of the passed color
+            this.shader = null; // Transparency shader for 3d land
+            // this.lastFrame = null;
         },
 
         mounted() {
-            this.setup();
-            requestAnimationFrame(this.onFrame);
-
             window.addEventListener('resize', this.onResize);
+            this.setup();
         },
 
-        destroy(){
-            this.destroyed = true;
+        destroyed(){
             window.removeEventListener('resize', this.onResize);
+            if(this.sketch){
+                this.sketch.remove();
+            }
         },
 
         methods: {
 
+
+            async setup(){
+
+                let boundingRect = this.$el.getBoundingClientRect();
+
+                new p5(sketch => {
+                    this.sketch = sketch;
+
+                    sketch.setup = () => {
+                        this.sketch.createCanvas(boundingRect.width, boundingRect.height, this.sketch.WEBGL);
+
+                        this.loadTextures();
+                        this.computeTiles();
+                        this.backgroundColor = this.sketch.color(this.background);
+
+                        this.sketch.fill(0,0,0,0);
+                    };
+
+                    sketch.draw = () => {
+                        this.onFrame();
+                    };
+
+                }, this.$el);
+
+            },
+
+            loadTextures() {
+
+                if(this.placeholder) {
+                    this.placeholderTexture = this.sketch.loadImage(this.placeholder);
+                }
+
+                this.textures.length = 0;
+                for(let src of this.images){
+                    this.textures.push(this.sketch.loadImage(src, im => im.complete = true));
+                }
+
+            },
+
+            computeTiles() {
+
+                const initialColumns = Math.ceil(this.sketch.width / this.itemWidth);
+                const correctedColumns = Math.max(this.rowMin, Math.min(this.rowMax, initialColumns));
+                const tileWidth = (this.sketch.width - (correctedColumns - 1) * this.spacing) / correctedColumns;
+                const tileHeight = tileWidth * this.ratio;
+                const initialRows = Math.ceil(this.sketch.height / (tileHeight + this.spacing)) + 2;
+
+                if(correctedColumns === this.columns && initialRows === this.rows) return;
+
+                this.tiles.length = 0;
+                this.columns = correctedColumns;
+                this.rows = initialRows;
+                this.tileWidth = tileWidth;
+                this.tileHeight = tileHeight;
+
+                for(let i = 0; i < this.columns * this.rows; i++){
+                    this.tiles.push({
+                        opacity: 0,
+                        texture: this.textures[Math.floor(Math.random() * this.textures.length)],
+                    });
+                }
+
+            },
+
+            onFrame() {
+
+                const s = this.sketch;
+                s.push();
+                s.translate(0, -s.height / 2);
+
+                s.background(this.background);
+
+                for(let i in this.tiles){
+
+                    const tile = this.tiles[i];
+                    const x = i % this.columns - (this.columns - 1) / 2;
+                    const y = ((Math.floor(i / this.columns) + s.millis() * this.speed * 0.00015) % this.rows) - 1;
+
+                    s.push();
+                    s.rotateX(this.angle);
+                    s.translate(x * this.tileWidth + x * this.spacing, y * this.tileHeight + y * this.spacing);
+
+                    // Fade in when loaded
+                    if(tile.texture.complete && tile.opacity < 255){
+                        tile.opacity = Math.min(255, tile.opacity + 5);
+                    }
+
+                    // Draw placeholder image
+                    if(tile.opacity < 128 && this.placeholder) {
+                        s.texture(this.placeholderTexture);
+                        // s.fill(25);
+                        s.plane(this.tileWidth, this.tileHeight);
+                    }
+
+                    if(tile.opacity >= 128) {
+                        s.texture(tile.texture);
+                        s.plane(this.tileWidth, this.tileHeight);
+                    }
+
+                    // Draw a mask over the image to simulate fading in
+                    // Todo: give shaders a try, as right now, we have to fade out the placeholder
+                    // because making textures transparent on the fly is killing for performance.
+
+                    s.translate(0, 0, .05);
+                    if(tile.opacity < 255){
+                        s.ambientMaterial(
+                            this.backgroundColor.levels[0],
+                            this.backgroundColor.levels[1],
+                            this.backgroundColor.levels[2],
+                            255 - Math.abs(tile.opacity * 2 - 255)
+                        );
+                        s.plane(this.tileWidth + this.spacing, this.tileHeight + this.spacing);
+                    }
+
+                    s.pop();
+                }
+
+                s.pop();
+            },
+
             onResize(){
                 this.$nextTick(() => {
-                    let rect = this.canvas.getBoundingClientRect();
-                    if(rect.width !== this.canvas.width || rect.height !== this.canvas.height){
-                        this.setup();
-                        this.recompute = Math.random();
+
+                    if(this.sketch){
+                        let boundingRect = this.$el.getBoundingClientRect();
+                        this.sketch.resizeCanvas(boundingRect.width, boundingRect.height);
+                        this.computeTiles();
                     }
                 });
             },
 
-            onFrame(time){
-
-                if(this.destroyed) return;
-
-                // this.delta = 1000 / 60
-                const delta = (time - this.lastFrame || 0) / (1000 / 60);
-                this.lastFrame = time;
-
-                // Todo: delta
-
-                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-                if(!this.rows.length) return;
-
-                const itemsPerRow = this.rows[0].tiles.length;
-                let itemWidth = this.canvas.width / itemsPerRow;
-                const spacing = itemWidth * this.spacing / 2;
-                itemWidth -= (spacing * (itemsPerRow - 1)) / itemsPerRow;
-                const itemHeight = itemWidth * this.ratio;
-
-                const speedMod = this.itemWidth / itemWidth;
-
-                for(let rowIndex in this.rows){
-                    const row = this.rows[rowIndex];
-                    const offsetDelta = this.speed * 0.003 * speedMod * (1 / this.ratio) * delta;
-                    row.offset = (row.offset + offsetDelta) % this.rows.length;
-
-
-                    for(let tileIndex in row.tiles){
-                        const tile = row.tiles[tileIndex];
-
-                        if(tile.opacity < 1 && this.placeholder) {
-                            this.context.globalAlpha = 1;
-                            this.context.drawImage(
-                                this.placeholderImage, 0, 0, this.placeholderImage.width, this.placeholderImage.height,
-                                tileIndex * itemWidth + tileIndex * spacing,
-                                (row.offset - 1) * (itemHeight + spacing),
-                                itemWidth, itemHeight);
-                        }
-
-                        if(!tile.loaded) continue;
-
-                        if(tile.opacity < 1){
-                            tile.opacity = Math.min(1, tile.opacity + 0.025 * delta);
-                        }
-
-                        this.context.globalAlpha = tile.opacity;
-                        this.context.drawImage(
-                            tile.image, tile.left, tile.top, tile.width, tile.height,
-                            tileIndex * itemWidth + tileIndex * spacing,
-                            (row.offset - 1) * (itemHeight + spacing),
-                            itemWidth, itemHeight);
-
-                    }
-                }
-
-                requestAnimationFrame(this.onFrame);
-            },
-
-            setup(){
-
-                this.canvas = this.$refs.canvas;
-                let rect = this.$el.getBoundingClientRect();
-
-                // Todo: handle DPI
-                this.canvas.width = rect.width;
-                this.canvas.height = rect.height * 1.5;
-                this.context = this.canvas.getContext('2d');
-
-                this.perspective = Math.max(this.canvas.height, this.canvas.width) * 1.2;
-
-            },
         }
 
     };
@@ -257,9 +239,8 @@
 
 <style lang="scss">
 
-    .vue-starwars {
 
-        overflow: hidden;
+    .vue-starwars {
 
         &:after {
             position: absolute;
@@ -269,13 +250,11 @@
         }
 
         canvas {
-
-            transform-origin: 50% 0;
-            transform: rotateX(50deg);
-
-            width: 100%;
-            height: 150%;
-
+            position:absolute;
+            left:0;
+            top:0;
+            right:0;
+            bottom:0;
         }
 
     }

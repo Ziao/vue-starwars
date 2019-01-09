@@ -58,6 +58,14 @@ spacing | float | 0.05 | The spacing between tiles. Relative to the width of the
 - Take DPI into account.
 - Calculate perspective based on size instead of fixed.
 - Get rid of the 'rows' concept?
+- Tilt-shift blur
+- Disable the gradient
+- Set the perspective/rotation with a prop
+
+# Projects using this component
+*I'd love to see what you make with this. Shoot me a line to have your project added!*
+- ...
+- ... 
  
 ## License
 This project is licensed under the MIT License - see the [license.md](license.md) file for details
