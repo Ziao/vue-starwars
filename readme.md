@@ -41,7 +41,7 @@ You can now use the ```<star-wars />``` component. See the documentation for the
 Option | Type | Default | Explanation
 --- | --- | --- | ---
 images **(required)** | array[string] | - | An array of images. The elements should be the URLs to the images you want to use.
-background | string | #000000 | The background color of the component. Either a hexcode or "transparent"
+background | string | #000000 | The background color of the component as a hex code.
 placeholder | string | - | The location of the image to be used while the actual image is still loading
 width | string | 100% | The width of the component. Valid options are things like 100%, 500px, 90vw, etc.
 height | string | 100% | The height of the component. Valid options are things like 100%, 500px, 90vw, etc.
@@ -50,7 +50,8 @@ row-min | integer | 3 | The minimum number of tiles on a row, for mobile screens
 row-max | integer | 9 | The maximum number of tiles on a row, for massive screens
 item-width | integer | 250 | The target width (in pixels) of every tile. This is used to calculate the number of tiles that will be displayed per row. 
 speed | float | 1 | A modifier to the speed. A value of 2 makes the tiles scroll by twice as fast.
-spacing | float | 0.05 | The spacing between tiles. Relative to the width of the items. You'll probably want to keep this lower than 0.1 
+spacing | integer | 3 | The spacing between tiles, in pixels. 
+angle | float | ~0.62 | The angle, in radians, of the plane.
 
 ## Todo
 - ~~Keep track of the rows / columns so we don't recalculate everything when the element resizes.~~
