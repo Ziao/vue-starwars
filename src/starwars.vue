@@ -100,7 +100,6 @@
 
         methods: {
 
-
             async setup(){
 
                 let boundingRect = this.$el.getBoundingClientRect();
