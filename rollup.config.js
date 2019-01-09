@@ -3,6 +3,7 @@ import nodent from 'rollup-plugin-nodent'; // Transform async/await as buble doe
 import buble from 'rollup-plugin-buble'; // Transpile/polyfill with reasonable browser support
 import resolve from 'rollup-plugin-node-resolve'; // Allow us to include and use external packages
 import commonjs from 'rollup-plugin-commonjs'
+import minify from 'rollup-plugin-babel-minify';
 
 export default {
     input: 'src/starwars.vue', // Path relative to package.json
@@ -11,6 +12,7 @@ export default {
         exports: 'named',
     },
     plugins: [
+        minify({}),
         resolve(),
         commonjs({
             exclude: [],
@@ -32,6 +34,6 @@ export default {
             transforms: {
                 dangerousForOf: true
             }
-        })
+        }),
     ],
 };

@@ -17,8 +17,12 @@
     "rollup": "^0.68.1",
     "rollup-plugin-buble": "^0.19.6",
     "rollup-plugin-nodent": "^0.2.2",
+    "rollup-plugin-uglify": "^6.0.0",
     "rollup-plugin-vue": "^4.3.2",
-    "vue-template-compiler": "^2.5.21"
+    "vue-template-compiler": "^2.5.21",
+    "rollup-plugin-babel-minify": "^6.2.0",
+    "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-node-resolve": "^4.0.0"
   },
   "scripts": {
     "build": "npm run build:umd & npm run build:es & npm run build:unpkg",
@@ -27,8 +31,6 @@
     "build:unpkg": "rollup --config rollup.config.js --format iife --file dist/starwars.min.js"
   },
   "dependencies": {
-    "p5": "^0.7.2",
-    "rollup-plugin-commonjs": "^9.2.0",
-    "rollup-plugin-node-resolve": "^4.0.0"
+    "p5": "^0.7.2"
   }
 }
