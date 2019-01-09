@@ -23,7 +23,10 @@ export default {
             css: true, // Dynamically inject css as a <style> tag
             compileTemplate: true, // Explicitly convert template to render function
         }),
-        nodent(),
+        nodent({
+            promises: true,
+            es6target: true,
+        }),
         buble({
             // Transpile to ES5
             transforms: {

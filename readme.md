@@ -53,14 +53,14 @@ speed | float | 1 | A modifier to the speed. A value of 2 makes the tiles scroll
 spacing | float | 0.05 | The spacing between tiles. Relative to the width of the items. You'll probably want to keep this lower than 0.1 
 
 ## Todo
-- Keep track of the rows / columns so we don't recalculate everything when the element resizes.
+- ~~Keep track of the rows / columns so we don't recalculate everything when the element resizes.~~
 - Negative speed to go backwards.
-- Take DPI into account.
-- Calculate perspective based on size instead of fixed.
-- Get rid of the 'rows' concept?
+- ~~Take DPI into account.~~
+- ~~Calculate perspective based on size instead of fixed.~~ (Instead, you are able to pass an angle now)
+- ~~Get rid of the 'rows' concept?~~
 - Tilt-shift blur
-- Disable the gradient
-- Set the perspective/rotation with a prop
+- Disable the gradient with a prop
+- ~~Set the perspective/rotation with a prop~~
 
 # Projects using this component
 *I'd love to see what you make with this. Shoot me a line to have your project added!*

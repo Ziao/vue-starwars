@@ -49037,10 +49037,10 @@ var script = {
     },
     methods: {
         setup: function setup() {
-            return (function ($return, $error) {
-                var this$1 = this;
+            var this$1 = this;
 
-                var boundingRect = this.$el.getBoundingClientRect();
+            return new Promise(function ($return, $error) {
+                var boundingRect = this$1.$el.getBoundingClientRect();
                 new p5$1(function (sketch) {
                     this$1.sketch = sketch;
                     sketch.setup = (function () {
@@ -49053,9 +49053,9 @@ var script = {
                     sketch.draw = (function () {
                         this$1.onFrame();
                     });
-                }, this.$el);
+                }, this$1.$el);
                 return $return();
-            }).$asyncbind(this, true);
+            });
         },
         loadTextures: function loadTextures() {
             if (this.placeholder) {
