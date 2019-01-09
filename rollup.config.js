@@ -12,7 +12,10 @@ export default {
         exports: 'named',
     },
     plugins: [
-        minify({}),
+        minify({
+            comments: true
+            sourceMap: false,
+        }),
         resolve(),
         commonjs({
             exclude: [],
